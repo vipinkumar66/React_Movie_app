@@ -1,21 +1,47 @@
 import { useEffect, useState } from 'react';
 import './App.css';
-import Header from './components/header/Header';
+import searchIcon from './search.svg';
+import MovieCard from './MovieCard';
+
+const API_URL = "http://www.omdbapi.com/?<ADD YOUR API KEY HERE>&"
 
 const App = () => {
-  const [count, setCount] = useState(0)
+  const [movies, setMovies] = useState([])
+  const [searchTerm, setSearchTerm] = useState('')
 
-  // useEffect(() => {
-  //   alert("To changed the counter to " + count)
-  // },[count])
+  const searchmovies = async(title) =>{
+    const response = await fetch(`${API_URL}s=${title}`)
+    const data = await response.json()
+    setMovies(data.Search)
+  }
+  useEffect(() => {
+    searchmovies('superman')
+  }, []);
 
-  return(
-    <div className='container-fluid mt-5'>
-      <div className='row justify-content-center'>
-        <button className='btn btn-danger btn-sm' onClick={() => setCount((prevCount) => prevCount-1)}>-</button>
-        <h3>Count: {count}</h3>
-        <button className='btn btn-primary btn-sm' onClick={() => setCount((prevCount) => prevCount+1)}>+</button>
+  return (
+    <div className='app'>
+      <h1>MovieArea</h1>
+
+      <div className='search'>
+        <input placeholder='Search for movies' value={searchTerm} onChange= {(e)=>setSearchTerm(e.target.value)}/>
+        <img src={searchIcon} alt="search" onClick={()=>searchmovies(searchTerm)}/>
       </div>
+
+      {
+        movies?.length > 0
+        ?(
+          <div className='container'>
+            {movies.map((movie)=>(
+                <MovieCard movie={movie}/>
+            ))};
+
+          </div>
+        ): (
+          <div className='empty'>
+            <h2>No movies Found</h2>
+          </div>
+        )
+      }
     </div>
     
   );
